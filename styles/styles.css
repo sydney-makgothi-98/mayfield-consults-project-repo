@@ -1,0 +1,155 @@
+/* ==========================================================================
+   1. MODERN RESET & BOX-SIZING
+   ========================================================================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    /* Makes padding and borders easy to manage */
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    /* Smooth scroll animation for your navigation links */
+    font-size: 16px;
+}
+
+body {
+    min-height: 100vh;
+    line-height: 1.6;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    color: #333333;
+    background-color: #fafafa;
+    -webkit-font-smoothing: antialiased;
+}
+
+:root {
+    --primary-color: #2c1a11;
+    --secondary-color: #f4e1d2;
+    --accent-color: #d4a373;
+    --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* ==========================================================================
+   2. TYPOGRAPHY & LINKS
+   ========================================================================== */
+
+h1,
+h2 {
+    font-family: var(--font-family);
+    color: var(--primary-color);
+    margin-bottom: 0.5em;
+}
+
+.nav a {
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
+
+.nav a:hover {
+    color: var(--accent-color);
+}
+
+.nav {
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    padding: 1rem 2rem;
+    margin: 0 auto;
+
+}
+
+.nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+
+.products {
+    padding: 2rem;
+    margin: 0 auto;
+    border-top: 1px solid var(--accent-color);
+    background-color: #fafafa;
+
+}
+
+.products h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+#gallery_header {
+    text-align: left;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.4rem;
+    padding: 1rem;
+    margin: 0 auto;
+}
+
+.gallery img {
+    max-width: 100%;
+    display: block;
+
+}
+
+.img {
+    border-radius: 12px
+}
+
+.gallery_image {
+    overflow: hidden;
+    border-radius: 12px;
+    width: 100%;
+    object-fit: cover;
+    height: 320px;
+}
+
+/* ==========================================================================
+   3. FOOTER
+   ========================================================================== */
+
+.footer {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    padding: 3rem 2rem 1.5rem;
+    margin-top: 2rem;
+}
+
+.footer_content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+}
+
+.footer_title,
+.footer_heading {
+    color: var(--accent-color);
+    margin-bottom: 0.5em;
+}
+
+.footer a {
+    text-decoration: none;
+    color: var(--secondary-color);
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: var(--accent-color);
+}
+
+.footer_copyright {
+    text-align: center;
+    font-size: 0.875rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(244, 225, 210, 0.2);
+}
