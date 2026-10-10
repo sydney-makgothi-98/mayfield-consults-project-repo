@@ -1,12 +1,12 @@
-# BrewHaus
+# The Gorilla Pit
 
-A simple, responsive website for BrewHaus, a fictional coffee shop. It is built with plain HTML and CSS.
+A simple, responsive website for The Gorilla Pit, a fictional gym. It is built with plain HTML and CSS.
 
 ## Pages
 
-- **index.html**: the home page, with an intro, "Why BrewHaus?", the product gallery, and pricing.
-- **product_1.html, product_2.html, product_3.html**: a description page for each gallery image.
-- **contact.html**: a contact form.
+- **index.html**: the home page, with an intro, "Why The Gorilla Pit?", the programs gallery, and membership plans.
+- **product_1.html, product_2.html, product_3.html**: a description page for each program (Strength Training, HIIT & Cardio, Yoga & Mobility).
+- **contact.html**: a contact form for booking a free trial or asking questions.
 
 ## Project structure
 
@@ -16,7 +16,7 @@ A simple, responsive website for BrewHaus, a fictional coffee shop. It is built 
 ├── product_1.html
 ├── product_2.html
 ├── product_3.html
-├── images/          # Product photos
+├── images/          # Program photos
 └── styles/
     ├── styles.css   # All site styles, including media queries
     └── frontend.js  # JavaScript (currently empty)

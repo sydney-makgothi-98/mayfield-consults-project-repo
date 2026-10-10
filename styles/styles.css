@@ -20,16 +20,52 @@ body {
     min-height: 100vh;
     line-height: 1.6;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    color: #333333;
-    background-color: #fafafa;
+    color: var(--muted-text);
+    background-color: var(--primary-color);
     -webkit-font-smoothing: antialiased;
 }
 
 :root {
-    --primary-color: #2c1a11;
-    --secondary-color: #f4e1d2;
-    --accent-color: #d4a373;
+    --primary-color: #0a0a0a;
+    --secondary-color: #f5f3ff;
+    --accent-color: #60a5fa;
+    --accent-color-2: #a78bfa;
+    --text-color: #ffffff;
+    --muted-text: #d1d5db;
     --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* --- Animated background --- */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(-45deg, #000000, #0b1f4d, #2e1065, #000000, #1e1b4b);
+    background-size: 400% 400%;
+    animation: background_shift 20s ease infinite;
+}
+
+@keyframes background_shift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Turn the animation off for people who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+    body::before {
+        animation: none;
+    }
 }
 
 /* ==========================================================================
@@ -39,18 +75,20 @@ body {
 h1,
 h2 {
     font-family: var(--font-family);
-    color: var(--primary-color);
+    color: var(--text-color);
     margin-bottom: 0.5em;
+    font-weight: 800;
+    letter-spacing: -0.02em;
 }
 
 .nav a {
     text-decoration: none;
-    color: var(--primary-color);
+    color: var(--text-color);
     transition: color 0.3s ease;
 }
 
 .nav a:hover {
-    color: var(--accent-color);
+    color: var(--accent-color-2);
 }
 
 .nav {
@@ -72,7 +110,6 @@ h2 {
     padding: 2rem;
     margin: 0 auto;
     border-top: 1px solid var(--accent-color);
-    background-color: #fafafa;
 
 }
 
@@ -129,7 +166,7 @@ h2 {
 .about {
     padding: 2rem;
     margin: 0 auto;
-    background-color: var(--secondary-color);
+    background-color: rgba(255, 255, 255, 0.04);
 }
 
 .about h2 {
@@ -148,7 +185,7 @@ h2 {
 }
 
 .about_title {
-    color: var(--primary-color);
+    color: var(--text-color);
     margin-bottom: 0.5rem;
 }
 
@@ -179,25 +216,26 @@ h2 {
 .price_card {
     padding: 1.5rem;
     text-align: center;
-    background-color: #ffffff;
-    border: 1px solid var(--secondary-color);
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
     border-radius: 12px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .price_card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(44, 26, 17, 0.1);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
 }
 
 .price_title {
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .price_amount {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--accent-color);
+    color: var(--accent-color-2);
     margin: 0.5rem 0;
 }
 
@@ -206,7 +244,7 @@ h2 {
    ========================================================================== */
 
 .footer {
-    background-color: var(--primary-color);
+    background-color: rgba(0, 0, 0, 0.6);
     color: var(--secondary-color);
     padding: 3rem 2rem 1.5rem;
     margin-top: 2rem;
@@ -231,7 +269,7 @@ h2 {
 }
 
 .footer a:hover {
-    color: var(--accent-color);
+    color: var(--accent-color-2);
 }
 
 .footer_copyright {
@@ -239,7 +277,7 @@ h2 {
     font-size: 0.875rem;
     margin-top: 2rem;
     padding-top: 1rem;
-    border-top: 1px solid rgba(244, 225, 210, 0.2);
+    border-top: 1px solid rgba(245, 243, 255, 0.2);
 }
 /* ==========================================================================
    4. CONTACT PAGE
@@ -270,22 +308,23 @@ h2 {
 
 .form_label {
     font-weight: 600;
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .form_input {
     font: inherit;
     padding: 0.75rem;
     margin-bottom: 1rem;
-    border: 1px solid #cccccc;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
-    background-color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-color);
 }
 
 .form_input:focus {
     outline: none;
     border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.3);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
 .form_button {
@@ -294,14 +333,14 @@ h2 {
     padding: 0.75rem;
     border: none;
     border-radius: 8px;
-    background-color: var(--primary-color);
-    color: var(--secondary-color);
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: var(--text-color);
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: filter 0.3s ease;
 }
 
 .form_button:hover {
-    background-color: var(--accent-color);
+    filter: brightness(1.2);
 }
 
 /* ==========================================================================
@@ -335,12 +374,12 @@ h2 {
     margin-top: 1rem;
     font-weight: 600;
     text-decoration: none;
-    color: var(--primary-color);
+    color: var(--text-color);
     transition: color 0.3s ease;
 }
 
 .back_link:hover {
-    color: var(--accent-color);
+    color: var(--accent-color-2);
 }
 
 /* ==========================================================================
