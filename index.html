@@ -14,12 +14,15 @@
     <script src="styles/frontend.js" async defer></script>
     
     <nav class="nav" id="nav">
+
         <h1 class="general_title">BrewHaus</h1>
         <ul class="nav_list" id="nav_list">
             <li class="nav_item" id="nav_item_1"><a href="#products">Products</a></li>
             <li class="nav_item" id="nav_item_2"><a href="#gallery_section">Gallery</a></li>
-            <li class="nav_item" id="nav_item_3"><a href="#contact_section">Contact</a></li>
+            <li class="nav_item" id="nav_item_4"><a href="#pricing">Pricing</a></li>
+            <li class="nav_item" id="nav_item_3"><a href="contact.html">Contact</a></li>
         </ul>
+        
     </nav>
 
 
@@ -35,7 +38,38 @@
             <p class="product_text">
                 Our expert baristas craft each cup with precision, ensuring every sip is a moment of pure bliss.
             </p>
+            <p class="product_text">
+                Whether you're grabbing a quick espresso on the way to work or settling in for a slow afternoon latte, BrewHaus is your home for great coffee.
+            </p>
         </article>
+
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="about" id="about">
+
+        <h2 class="general_title" id="about_header">Why BrewHaus?</h2>
+
+        <div class="about_grid">
+            <article class="about_item">
+                <h3 class="about_title">Ethically Sourced</h3>
+                <p class="about_text">
+                    We work directly with small farms, paying fair prices so growers and their communities can thrive.
+                </p>
+            </article>
+            <article class="about_item">
+                <h3 class="about_title">Roasted Fresh</h3>
+                <p class="about_text">
+                    Every batch is roasted in-house each week, so your coffee is always at its freshest and most flavourful.
+                </p>
+            </article>
+            <article class="about_item">
+                <h3 class="about_title">Made With Care</h3>
+                <p class="about_text">
+                    Our baristas are trained to get every detail right, from the grind size to the milk texture.
+                </p>
+            </article>
+        </div>
 
     </section>
 
@@ -45,10 +79,44 @@
         <h2 class="general_title" id="gallery_header">Products We Have To Offer</h2>
 
         <div class="gallery" id="gallery">
-        <img class="gallery_image" src="images/Product_1.jpg" alt="Coffee Beans">
-        <img class="gallery_image" src="images/Product_2.jpg" alt="Coffee Cup">
-        <img class="gallery_image" src="images/Product_3.webp" alt="Coffee">
+        <a class="gallery_link" href="product_1.html"><img class="gallery_image" src="images/Product_1.jpg" alt="Coffee Beans"></a>
+        <a class="gallery_link" href="product_2.html"><img class="gallery_image" src="images/Product_2.jpg" alt="Coffee Cup"></a>
+        <a class="gallery_link" href="product_3.html"><img class="gallery_image" src="images/Product_3.webp" alt="Coffee"></a>
 
+        </div>
+
+    </section>
+
+    <!-- PRICING SECTION -->
+    <section class="pricing" id="pricing">
+
+        <h2 class="general_title" id="pricing_header">Our Prices</h2>
+
+        <p class="pricing_intro">
+            Simple, honest pricing. All drinks are available in regular or large for an extra R5.
+        </p>
+
+        <div class="pricing_grid">
+            <article class="price_card">
+                <h3 class="price_title">Espresso</h3>
+                <p class="price_amount">R25</p>
+                <p class="price_text">A rich, bold single shot made with our house blend.</p>
+            </article>
+            <article class="price_card">
+                <h3 class="price_title">Cappuccino</h3>
+                <p class="price_amount">R35</p>
+                <p class="price_text">Espresso topped with velvety steamed milk and foam.</p>
+            </article>
+            <article class="price_card">
+                <h3 class="price_title">Latte</h3>
+                <p class="price_amount">R38</p>
+                <p class="price_text">Smooth and creamy, with a light layer of foam.</p>
+            </article>
+            <article class="price_card">
+                <h3 class="price_title">Coffee Beans (250g)</h3>
+                <p class="price_amount">R120</p>
+                <p class="price_text">Freshly roasted whole beans to brew at home.</p>
+            </article>
         </div>
 
     </section>

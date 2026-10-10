@@ -113,6 +113,94 @@ h2 {
     height: 320px;
 }
 
+.gallery_link {
+    display: block;
+    border-radius: 12px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.gallery_link:hover {
+    transform: translateY(-4px);
+    opacity: 0.9;
+}
+
+/* --- About section --- */
+
+.about {
+    padding: 2rem;
+    margin: 0 auto;
+    background-color: var(--secondary-color);
+}
+
+.about h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.about_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.about_item {
+    text-align: center;
+}
+
+.about_title {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+/* --- Pricing section --- */
+
+.pricing {
+    padding: 2rem;
+    margin: 0 auto;
+    border-top: 1px solid var(--accent-color);
+}
+
+.pricing h2 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.pricing_intro {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.pricing_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.price_card {
+    padding: 1.5rem;
+    text-align: center;
+    background-color: #ffffff;
+    border: 1px solid var(--secondary-color);
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.price_card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(44, 26, 17, 0.1);
+}
+
+.price_title {
+    color: var(--primary-color);
+}
+
+.price_amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin: 0.5rem 0;
+}
+
 /* ==========================================================================
    3. FOOTER
    ========================================================================== */
@@ -152,4 +240,190 @@ h2 {
     margin-top: 2rem;
     padding-top: 1rem;
     border-top: 1px solid rgba(244, 225, 210, 0.2);
+}
+/* ==========================================================================
+   4. CONTACT PAGE
+   ========================================================================== */
+
+.contact {
+    padding: 2rem;
+    margin: 0 auto;
+    max-width: 600px;
+    border-top: 1px solid var(--accent-color);
+}
+
+.contact h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.contact_text {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.contact_form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form_label {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.form_input {
+    font: inherit;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+}
+
+.form_input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.3);
+}
+
+.form_button {
+    font: inherit;
+    font-weight: 600;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form_button:hover {
+    background-color: var(--accent-color);
+}
+
+/* ==========================================================================
+   5. PRODUCT DETAIL PAGES
+   ========================================================================== */
+
+.product_cover {
+    display: block;
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+}
+
+.product_detail {
+    padding: 2rem;
+    margin: 0 auto;
+    max-width: 800px;
+}
+
+.product_detail h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.product_detail p {
+    margin-bottom: 1rem;
+}
+
+.back_link {
+    display: inline-block;
+    margin-top: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
+
+.back_link:hover {
+    color: var(--accent-color);
+}
+
+/* ==========================================================================
+   6. RESPONSIVE / MEDIA QUERIES
+   ========================================================================== */
+
+/* Large screens: stop content stretching too wide */
+@media (min-width: 1200px) {
+    .products,
+    .gallery_section,
+    .about_grid,
+    .pricing,
+    .footer_content {
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+    .nav {
+        padding: 1rem;
+    }
+
+    .products,
+    .contact,
+    .product_detail,
+    .about,
+    .pricing {
+        padding: 1.5rem 1rem;
+    }
+
+    .product_cover {
+        height: 280px;
+    }
+
+    .gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gallery_image {
+        height: 250px;
+    }
+
+    .footer {
+        padding: 2rem 1rem 1rem;
+    }
+}
+
+/* Phones */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    .nav {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    #gallery_header {
+        text-align: center;
+    }
+
+    .gallery {
+        grid-template-columns: 1fr;
+    }
+
+    .gallery_image {
+        height: 220px;
+    }
+
+    .footer_content {
+        text-align: center;
+    }
 }
