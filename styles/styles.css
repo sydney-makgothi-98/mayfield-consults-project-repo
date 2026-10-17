@@ -32,6 +32,8 @@ body {
     --accent-color-2: #a78bfa;
     --text-color: #ffffff;
     --muted-text: #d1d5db;
+    --card-background: rgba(255, 255, 255, 0.05);
+    --card-border: 1px solid rgba(255, 255, 255, 0.1);
     --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
@@ -69,155 +71,383 @@ body::before {
 }
 
 /* ==========================================================================
-   2. TYPOGRAPHY & LINKS
+   2. TYPOGRAPHY, LINKS & BUTTONS
    ========================================================================== */
 
 h1,
-h2 {
+h2,
+h3 {
     font-family: var(--font-family);
     color: var(--text-color);
+    line-height: 1.2;
+}
+
+h1,
+h2 {
     margin-bottom: 0.5em;
     font-weight: 800;
     letter-spacing: -0.02em;
 }
 
-.nav a {
-    text-decoration: none;
-    color: var(--text-color);
-    transition: color 0.3s ease;
+h3 {
+    margin-bottom: 0.5rem;
 }
 
-.nav a:hover {
-    color: var(--accent-color-2);
-}
-
-.nav {
-    justify-content: space-between;
-    align-items: center;
-    display: flex;
-    padding: 1rem 2rem;
-    margin: 0 auto;
-
-}
-
-.nav ul {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-}
-
-.products {
-    padding: 2rem;
-    margin: 0 auto;
-    border-top: 1px solid var(--accent-color);
-
-}
-
-.products h2 {
-    text-align: center;
+p {
     margin-bottom: 1rem;
 }
 
-#gallery_header {
-    text-align: left;
-    margin: 0 auto;
-    padding: 1rem;
+a {
+    color: var(--accent-color);
 }
 
-.gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 0.4rem;
-    padding: 1rem;
-    margin: 0 auto;
-}
-
-.gallery img {
+img {
+    display: block;
     max-width: 100%;
-    display: block;
-
+    /* Shows a dark block while an image is loading or missing */
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
-.img {
-    border-radius: 12px
+.button {
+    display: inline-block;
+    font: inherit;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: var(--text-color);
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: filter 0.3s ease, transform 0.3s ease;
 }
 
-.gallery_image {
-    overflow: hidden;
-    border-radius: 12px;
-    width: 100%;
-    object-fit: cover;
-    height: 320px;
+.button:hover {
+    filter: brightness(1.2);
+    transform: translateY(-2px);
 }
 
-.gallery_link {
-    display: block;
-    border-radius: 12px;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+.button_outline {
+    background: transparent;
+    border: 2px solid var(--accent-color);
 }
 
-.gallery_link:hover {
-    transform: translateY(-4px);
-    opacity: 0.9;
+.button_outline:hover {
+    background-color: rgba(96, 165, 250, 0.1);
 }
 
-/* --- About section --- */
+.button_group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
 
-.about {
-    padding: 2rem;
-    margin: 0 auto;
+/* ==========================================================================
+   3. NAVIGATION
+   ========================================================================== */
+
+.nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border-bottom: var(--card-border);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nav_logo {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+}
+
+.nav_logo a {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.nav_list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+}
+
+.nav_list a {
+    color: var(--muted-text);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.nav_list a:hover,
+.nav_list a.nav_active {
+    color: var(--accent-color-2);
+}
+
+/* ==========================================================================
+   4. SHARED SECTIONS
+   ========================================================================== */
+
+.section {
+    padding: 4rem 2rem;
+}
+
+/* Keeps content from stretching too wide on big screens */
+.section > * {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.section_alt {
     background-color: rgba(255, 255, 255, 0.04);
 }
 
-.about h2 {
+.section_title {
     text-align: center;
-    margin-bottom: 1.5rem;
+    font-size: 2rem;
 }
 
-.about_grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.5rem;
-}
-
-.about_item {
+.section_intro {
     text-align: center;
+    max-width: 650px;
+    margin-bottom: 2.5rem;
 }
 
-.about_title {
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
+.center_link {
+    text-align: center;
+    margin-top: 2.5rem;
 }
 
-/* --- Pricing section --- */
+/* --- Page header (top of inner pages) --- */
 
-.pricing {
-    padding: 2rem;
+.page_header {
+    text-align: center;
+    padding: 4rem 2rem 3rem;
+    border-bottom: var(--card-border);
+}
+
+.page_title {
+    font-size: 2.75rem;
+}
+
+.page_text {
+    max-width: 650px;
     margin: 0 auto;
-    border-top: 1px solid var(--accent-color);
 }
 
-.pricing h2 {
+/* --- Call to action banner --- */
+
+.cta {
     text-align: center;
-    margin-bottom: 0.5rem;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.35), rgba(124, 58, 237, 0.35));
+    border-top: var(--card-border);
 }
 
-.pricing_intro {
-    text-align: center;
+.cta_title {
+    font-size: 2rem;
+}
+
+.cta_text {
     margin-bottom: 2rem;
 }
 
+/* --- Feature cards (used on Home, About and Membership) --- */
+
+.feature_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.feature_card {
+    padding: 1.5rem;
+    text-align: center;
+    background-color: var(--card-background);
+    border: var(--card-border);
+    border-radius: 12px;
+}
+
+.feature_text {
+    margin-bottom: 0;
+}
+
+/* ==========================================================================
+   5. HOME PAGE
+   ========================================================================== */
+
+/* --- Hero --- */
+
+.hero {
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    position: relative;
+    /* Keeps the video and overlay layered inside the hero */
+    isolation: isolate;
+    overflow: hidden;
+}
+
+/* Background video, stretched to cover the whole hero */
+.hero_video {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Dark overlay on top of the video so the text stays readable */
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.8));
+}
+
+.hero_title {
+    font-size: 3.5rem;
+    max-width: 800px;
+}
+
+.highlight {
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-color-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.hero_text {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin-bottom: 2rem;
+}
+
+/* --- Intro --- */
+
+.intro_text {
+    text-align: center;
+}
+
+.section > .intro_text {
+    max-width: 800px;
+}
+
+/* --- Stats --- */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.stat_number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent-color);
+    margin-bottom: 0;
+}
+
+.stat_label {
+    margin-bottom: 0;
+}
+
+/* --- Program cards --- */
+
+.program_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.program_card {
+    display: block;
+    overflow: hidden;
+    color: inherit;
+    text-decoration: none;
+    background-color: var(--card-background);
+    border: var(--card-border);
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.program_card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+}
+
+.program_image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.program_body {
+    padding: 1.25rem;
+}
+
+.program_link {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+/* --- Testimonials --- */
+
+.testimonial_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.testimonial_card {
+    padding: 1.5rem;
+    background-color: var(--card-background);
+    border: var(--card-border);
+    border-left: 4px solid var(--accent-color-2);
+    border-radius: 12px;
+}
+
+.testimonial_quote {
+    font-style: italic;
+}
+
+.testimonial_name {
+    color: var(--accent-color-2);
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+/* --- Pricing --- */
+
 .pricing_grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
     gap: 1.5rem;
 }
 
 .price_card {
+    display: flex;
+    flex-direction: column;
     padding: 1.5rem;
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: var(--card-background);
+    border: var(--card-border);
     backdrop-filter: blur(8px);
     border-radius: 12px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -228,8 +458,19 @@ h2 {
     box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
 }
 
-.price_title {
+.price_card_featured {
+    border: 2px solid var(--accent-color-2);
+}
+
+.price_badge {
+    align-self: center;
+    padding: 0.25rem 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
     color: var(--text-color);
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    border-radius: 999px;
 }
 
 .price_amount {
@@ -239,65 +480,261 @@ h2 {
     margin: 0.5rem 0;
 }
 
-/* ==========================================================================
-   3. FOOTER
-   ========================================================================== */
-
-.footer {
-    background-color: rgba(0, 0, 0, 0.6);
-    color: var(--secondary-color);
-    padding: 3rem 2rem 1.5rem;
-    margin-top: 2rem;
+.price_period {
+    font-size: 0.9rem;
 }
 
-.footer_content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
+.price_text {
+    margin-bottom: 0;
 }
 
-.footer_title,
-.footer_heading {
+.price_features {
+    list-style: none;
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+
+.price_features li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.price_features li::before {
+    content: "✓ ";
     color: var(--accent-color);
-    margin-bottom: 0.5em;
+    font-weight: 700;
 }
 
-.footer a {
-    text-decoration: none;
-    color: var(--secondary-color);
-    transition: color 0.3s ease;
+/* Pushes the button to the bottom so all cards line up */
+.price_card .button {
+    margin-top: auto;
 }
 
-.footer a:hover {
-    color: var(--accent-color-2);
-}
-
-.footer_copyright {
-    text-align: center;
-    font-size: 0.875rem;
-    margin-top: 2rem;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(245, 243, 255, 0.2);
-}
 /* ==========================================================================
-   4. CONTACT PAGE
+   6. ABOUT PAGE
    ========================================================================== */
 
-.contact {
-    padding: 2rem;
-    margin: 0 auto;
-    max-width: 600px;
-    border-top: 1px solid var(--accent-color);
+.split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
 }
 
-.contact h2 {
-    text-align: center;
+.split_image {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.facility_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.facility_image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
     margin-bottom: 1rem;
 }
 
-.contact_text {
-    text-align: center;
+/* ==========================================================================
+   7. PROGRAM DETAIL PAGES
+   ========================================================================== */
+
+.program_cover {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+}
+
+.program_detail > * {
+    max-width: 800px;
+}
+
+.program_info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
     margin-bottom: 2rem;
+}
+
+.info_item {
+    padding: 1rem;
+    text-align: center;
+    background-color: var(--card-background);
+    border: var(--card-border);
+    border-radius: 12px;
+}
+
+.info_label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.info_value {
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 0;
+}
+
+.detail_heading {
+    margin-top: 1.5rem;
+}
+
+.detail_list {
+    padding-left: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.detail_list li {
+    margin-bottom: 0.5rem;
+}
+
+.program_detail .button_group {
+    justify-content: flex-start;
+    margin-top: 2rem;
+}
+
+.back_link {
+    display: block;
+    margin-top: 2rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+
+.back_link:hover {
+    color: var(--accent-color-2);
+}
+
+/* ==========================================================================
+   8. TIMETABLE PAGE
+   ========================================================================== */
+
+/* Lets the table scroll sideways on small screens */
+.table_wrapper {
+    overflow-x: auto;
+    border: var(--card-border);
+    border-radius: 12px;
+}
+
+.timetable {
+    width: 100%;
+    min-width: 750px;
+    border-collapse: collapse;
+}
+
+.timetable th,
+.timetable td {
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.timetable th {
+    color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.timetable td:first-child {
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.timetable tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.timetable_note {
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: 1.5rem;
+}
+
+/* ==========================================================================
+   9. TRAINERS PAGE
+   ========================================================================== */
+
+.trainer_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.trainer_card {
+    overflow: hidden;
+    text-align: center;
+    background-color: var(--card-background);
+    border: var(--card-border);
+    border-radius: 12px;
+}
+
+.trainer_image {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    object-position: top;
+}
+
+.trainer_body {
+    padding: 1.25rem;
+}
+
+.trainer_role {
+    color: var(--accent-color-2);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.trainer_text {
+    margin-bottom: 0;
+}
+
+/* ==========================================================================
+   10. MEMBERSHIP PAGE
+   ========================================================================== */
+
+.section > .faq_list {
+    max-width: 800px;
+}
+
+.faq_item {
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    background-color: var(--card-background);
+    border: var(--card-border);
+    border-radius: 12px;
+}
+
+.faq_item summary {
+    font-weight: 600;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.faq_item p {
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+}
+
+/* ==========================================================================
+   11. CONTACT PAGE
+   ========================================================================== */
+
+.contact_layout {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 2.5rem;
+    align-items: start;
 }
 
 .contact_form {
@@ -321,108 +758,137 @@ h2 {
     color: var(--text-color);
 }
 
+.form_input option {
+    background-color: var(--primary-color);
+}
+
 .form_input:focus {
     outline: none;
     border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
-.form_button {
-    font: inherit;
-    font-weight: 600;
-    padding: 0.75rem;
-    border: none;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    color: var(--text-color);
-    cursor: pointer;
-    transition: filter 0.3s ease;
+.contact_info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-.form_button:hover {
-    filter: brightness(1.2);
+.info_card {
+    padding: 1.25rem;
+    background-color: var(--card-background);
+    border: var(--card-border);
+    border-radius: 12px;
+}
+
+.info_card_title {
+    color: var(--accent-color);
+}
+
+.info_card p {
+    margin-bottom: 0.25rem;
 }
 
 /* ==========================================================================
-   5. PRODUCT DETAIL PAGES
+   12. FOOTER
    ========================================================================== */
 
-.product_cover {
-    display: block;
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
+.footer {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: var(--secondary-color);
+    padding: 3rem 2rem 1.5rem;
 }
 
-.product_detail {
-    padding: 2rem;
+.footer_content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
     margin: 0 auto;
-    max-width: 800px;
 }
 
-.product_detail h2 {
-    text-align: center;
-    margin-bottom: 1rem;
+.footer_title,
+.footer_heading {
+    color: var(--accent-color);
+    margin-bottom: 0.5em;
 }
 
-.product_detail p {
-    margin-bottom: 1rem;
+.footer_text {
+    margin-bottom: 0.25rem;
 }
 
-.back_link {
-    display: inline-block;
+.footer_links {
+    list-style: none;
+}
+
+.footer_links li {
+    margin-bottom: 0.25rem;
+}
+
+.footer_social {
+    display: flex;
+    gap: 1rem;
     margin-top: 1rem;
-    font-weight: 600;
+}
+
+.footer a {
     text-decoration: none;
-    color: var(--text-color);
+    color: var(--secondary-color);
     transition: color 0.3s ease;
 }
 
-.back_link:hover {
+.footer a:hover {
     color: var(--accent-color-2);
 }
 
+.footer_copyright {
+    text-align: center;
+    font-size: 0.875rem;
+    margin-top: 2rem;
+    margin-bottom: 0;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(245, 243, 255, 0.2);
+}
+
 /* ==========================================================================
-   6. RESPONSIVE / MEDIA QUERIES
+   13. RESPONSIVE / MEDIA QUERIES
    ========================================================================== */
 
-/* Large screens: stop content stretching too wide */
-@media (min-width: 1200px) {
-    .products,
-    .gallery_section,
-    .about_grid,
-    .pricing,
-    .footer_content {
-        max-width: 1200px;
-        margin-left: auto;
-        margin-right: auto;
+/* Small laptops and tablets */
+@media (max-width: 900px) {
+    .nav {
+        position: static;
+        flex-direction: column;
+    }
+
+    .nav_list {
+        justify-content: center;
+    }
+
+    .hero_title {
+        font-size: 2.75rem;
+    }
+
+    .split,
+    .contact_layout {
+        grid-template-columns: 1fr;
     }
 }
 
 /* Tablets */
 @media (max-width: 768px) {
-    .nav {
-        padding: 1rem;
+    .section,
+    .cta {
+        padding: 3rem 1rem;
     }
 
-    .products,
-    .contact,
-    .product_detail,
-    .about,
-    .pricing {
-        padding: 1.5rem 1rem;
+    .page_header {
+        padding: 3rem 1rem 2rem;
     }
 
-    .product_cover {
+    .program_cover,
+    .split_image {
         height: 280px;
-    }
-
-    .gallery {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .gallery_image {
-        height: 250px;
     }
 
     .footer {
@@ -432,37 +898,253 @@ h2 {
 
 /* Phones */
 @media (max-width: 480px) {
-    h1 {
-        font-size: 1.5rem;
+    .nav_logo {
+        font-size: 1.3rem;
     }
 
-    h2 {
-        font-size: 1.25rem;
+    .nav_list {
+        gap: 0.75rem;
+        font-size: 0.95rem;
     }
 
-    .nav {
-        flex-direction: column;
-        gap: 0.5rem;
+    .hero {
+        min-height: 70vh;
     }
 
-    .nav ul {
-        flex-wrap: wrap;
+    .hero_title {
+        font-size: 2.1rem;
+    }
+
+    .section_title,
+    .cta_title {
+        font-size: 1.6rem;
+    }
+
+    .page_title {
+        font-size: 2rem;
+    }
+
+    .stat_number {
+        font-size: 2rem;
+    }
+
+    .program_image,
+    .facility_image {
+        height: 200px;
+    }
+
+    .trainer_image {
+        height: 280px;
+    }
+
+    .program_detail .button_group {
         justify-content: center;
-    }
-
-    #gallery_header {
-        text-align: center;
-    }
-
-    .gallery {
-        grid-template-columns: 1fr;
-    }
-
-    .gallery_image {
-        height: 220px;
     }
 
     .footer_content {
         text-align: center;
+    }
+
+    .footer_social {
+        justify-content: center;
+    }
+}
+
+/* ==========================================================================
+   14. JAVASCRIPT FEATURES
+   ==========================================================================
+   Styles for the elements and classes that frontend.js adds to the page.
+   ========================================================================== */
+
+/* --- Mobile menu button --- */
+
+.menu_toggle {
+    display: none;
+    font: inherit;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    color: var(--text-color);
+    background: transparent;
+    border: 2px solid var(--accent-color);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.menu_toggle:hover {
+    background-color: rgba(96, 165, 250, 0.1);
+}
+
+/* --- Nav after scrolling --- */
+
+.nav_scrolled {
+    background-color: rgba(0, 0, 0, 0.85);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* --- Scroll reveal --- */
+
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.revealed {
+    opacity: 1;
+    transform: none;
+}
+
+/* --- Back to top button --- */
+
+.back_to_top {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 20;
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.25rem;
+    color: var(--text-color);
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+.back_to_top_visible {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+}
+
+.back_to_top:hover {
+    filter: brightness(1.2);
+}
+
+/* --- Timetable filters & today highlight --- */
+
+.timetable_filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.filter_button {
+    font: inherit;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    color: var(--muted-text);
+    background-color: var(--card-background);
+    border: var(--card-border);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.filter_button:hover {
+    color: var(--text-color);
+    border-color: var(--accent-color);
+}
+
+.filter_active {
+    color: var(--text-color);
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    border-color: transparent;
+}
+
+.timetable td {
+    transition: opacity 0.3s ease;
+}
+
+.timetable .today {
+    background-color: rgba(167, 139, 250, 0.12);
+}
+
+.today_label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--accent-color-2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.timetable td.dimmed {
+    opacity: 0.2;
+}
+
+/* --- Contact form messages --- */
+
+.form_input.input_error {
+    border-color: #f87171;
+}
+
+.error_message {
+    margin-top: -0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    color: #f87171;
+}
+
+.form_success {
+    padding: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 0;
+    color: var(--text-color);
+    background-color: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.5);
+    border-radius: 8px;
+}
+
+/* --- Open / closed badge --- */
+
+.open_status {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 999px;
+    vertical-align: middle;
+}
+
+.open_status_open {
+    color: #4ade80;
+    background-color: rgba(74, 222, 128, 0.15);
+}
+
+.open_status_closed {
+    color: #f87171;
+    background-color: rgba(248, 113, 113, 0.15);
+}
+
+/* --- Mobile menu layout (only once JavaScript has added the button) --- */
+
+@media (max-width: 900px) {
+    .nav_has_toggle {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .nav_has_toggle .menu_toggle {
+        display: block;
+    }
+
+    .nav_has_toggle .nav_list {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 0;
+    }
+
+    .nav_open .nav_list {
+        display: flex;
     }
 }
