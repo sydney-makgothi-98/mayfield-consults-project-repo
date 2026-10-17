@@ -1,52 +1,51 @@
 # The Gorilla Pit
 
-A simple, responsive website for The Gorilla Pit, a fictional gym. It is built with plain HTML and CSS, with no frameworks or build tools.
+A responsive website for The Gorilla Pit, a fictional gym, built with **React**, **Vite** and **Tailwind CSS**.
 
-## Pages
+## Running it
 
-| Page | What's on it |
+```
+npm install
+npm run dev
+```
+
+Then open the link Vite prints (usually http://localhost:5173).
+
+| Command | What it does |
 |---|---|
-| `index.html` | Home: hero, intro, stats, why us, popular programs, testimonials, membership preview |
-| `about.html` | Our story, values and facilities |
-| `programs.html` | All six programs |
-| `program_*.html` | One page per program: strength, HIIT, boxing, yoga, spin, personal training |
-| `timetable.html` | Weekly class schedule |
-| `trainers.html` | The coaching team |
-| `membership.html` | Plans, add-ons and FAQ |
-| `contact.html` | Contact form, address and opening hours |
+| `npm run dev` | Starts the dev server with live reload |
+| `npm run build` | Builds the finished site into `dist/` |
+| `npm run preview` | Serves the built site locally to check it |
 
 ## Project structure
 
 ```
-├── index.html
-├── about.html
-├── programs.html
-├── program_strength.html   (and five more program pages)
-├── timetable.html
-├── trainers.html
-├── membership.html
-├── contact.html
-├── images/                 # All site photos (see below)
-└── styles/
-    ├── styles.css          # All site styles, including media queries
-    └── frontend.js         # Interactive features (see "How and why the JS works.md")
+├── index.html                  # Page shell, React renders into #root
+├── public/
+│   └── images/                 # Photos and the hero video
+└── src/
+    ├── main.jsx                # Starts React
+    ├── App.jsx                 # Puts the page together
+    ├── index.css               # Tailwind import + theme colours
+    ├── data.js                 # All the lists: programs, trainers, plans...
+    └── components/
+        ├── Header.jsx          # Logo, nav links, mobile menu
+        ├── Hero.jsx            # Video background and headline
+        ├── MainContent.jsx     # About, stats, why us, trainers, membership
+        ├── ProgramGrid.jsx     # Program cards + category filter
+        ├── ProgramCard.jsx     # One program card
+        ├── SessionStepper.jsx  # The − / + sessions-per-week control
+        └── Footer.jsx          # Contact, hours, links
 ```
 
-## Images
+## How it works
 
-All photos and the hero video live in `images/`. Each file name matches where it's used, such as `program_boxing.jpeg` or `trainer_3.avif`. To swap a photo, replace the file and update its `src` in the HTML if the extension changes.
-
-- `hero.mp4`: the looping background video on the Home page
-- `about.jpeg`: the Our Story photo on the About page
-- `facility_*`: the four facility photos on the About page
-- `program_*`: the program cards and program page covers
-- `trainer_1` to `trainer_6`: the trainer portraits, in the order they appear on the Trainers page
-
-## Running locally
-
-No build step or install is needed. Open `index.html` in your browser.
+- **Data file:** every list on the site lives in `src/data.js` as an array of objects, and the components use `.map()` to turn each object into a card. To add a program, trainer or plan, add an object to the array.
+- **Filter:** `ProgramGrid` keeps the selected category in `useState`. The filter buttons are built from the categories in the data, so adding a new category adds a new button.
+- **SessionStepper:** a controlled component, the same pattern as `QuantityStepper`. It receives `value` and `onChange` as props and has no state of its own. `ProgramGrid` holds every card's sessions in one state object, which is how it shows the weekly total, and why the numbers survive switching filters.
+- **Tailwind:** the theme colours (`primary`, `accent`, `accent-2`, `muted`, `lavender`) and the animated background are defined in `@theme` in `src/index.css`, so they work as normal classes like `text-accent`.
+- **Mobile-first:** unprefixed classes are for phones, and `sm:`, `md:` and `lg:` add changes for bigger screens. For example, `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`.
 
 ## Notes
 
-- The contact form doesn't send messages yet. It needs a form service such as Formspree or Netlify Forms.
-- The contact details, prices, trainers and testimonials are placeholders.
+- Contact details, prices, trainers and the address are placeholders.
