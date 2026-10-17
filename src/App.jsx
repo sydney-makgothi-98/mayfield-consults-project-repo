@@ -1,6 +1,6 @@
 function App() {
     return (
-        <h1>The Gorilla Pit</h1>
+        <h1 className="p-8 text-4xl font-extrabold text-white">The Gorilla Pit</h1>
     );
 }
 

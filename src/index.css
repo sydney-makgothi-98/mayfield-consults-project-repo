@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   THEME
+   ==========================================================================
+   Anything added here becomes a Tailwind class, for example:
+   --color-accent    ->  text-accent, bg-accent, border-accent
+   --animate-...     ->  animate-background-shift
+   ========================================================================== */
+
+@theme {
+    --color-primary: #0a0a0a;
+    --color-lavender: #f5f3ff;
+    --color-accent: #60a5fa;
+    --color-accent-2: #a78bfa;
+    --color-muted: #d1d5db;
+
+    --font-heading: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    --animate-background-shift: background-shift 20s ease infinite;
+
+    @keyframes background-shift {
+        0%,
+        100% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+    }
+}
