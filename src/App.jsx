@@ -1,6 +1,20 @@
+import Header from "./components/Header.jsx";
+import Footer from "./components/Footer.jsx";
+
 function App() {
     return (
-        <h1 className="p-8 text-4xl font-extrabold text-white">The Gorilla Pit</h1>
+        <div id="top">
+
+            {/* ANIMATED BACKGROUND */}
+            <div className="fixed inset-0 -z-10 animate-background-shift bg-[linear-gradient(-45deg,#000000,#0b1f4d,#2e1065,#000000,#1e1b4b)] bg-[length:400%_400%] motion-reduce:animate-none"></div>
+
+            <Header />
+
+            <main></main>
+
+            <Footer />
+
+        </div>
     );
 }
 
