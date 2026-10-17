@@ -11,6 +11,16 @@ function ProgramGrid() {
     // Which filter button is selected
     const [activeCategory, setActiveCategory] = useState("All");
 
+    // Sessions per week for each program, e.g. { 1: 3, 4: 1 }
+    const [sessions, setSessions] = useState({});
+
+    function updateSessions(programId, value) {
+        setSessions({ ...sessions, [programId]: value });
+    }
+
+    // Adds up every program's sessions for the weekly total
+    const totalSessions = Object.values(sessions).reduce((total, value) => total + value, 0);
+
     // Only the programs that match the selected filter
     const visiblePrograms = activeCategory === "All"
         ? programs
@@ -47,10 +57,23 @@ function ProgramGrid() {
                     ))}
                 </div>
 
+                {/* WEEKLY PLAN TOTAL */}
+                <p className="mb-8 text-center" aria-live="polite">
+                    Your weekly plan:{" "}
+                    <strong className="text-accent-2">
+                        {totalSessions} {totalSessions === 1 ? "session" : "sessions"}
+                    </strong>
+                </p>
+
                 {/* PROGRAM CARDS */}
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {visiblePrograms.map((program) => (
-                        <ProgramCard key={program.id} program={program} />
+                        <ProgramCard
+                            key={program.id}
+                            program={program}
+                            sessions={sessions[program.id] ?? 0}
+                            onSessionsChange={(value) => updateSessions(program.id, value)}
+                        />
                     ))}
                 </div>
 
