@@ -8,6 +8,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import programsRoutes from "./routes/programs.js";
+import authRoutes from "./routes/auth.js";
 
 const app = express();
 
@@ -40,6 +41,9 @@ app.get("/api/health", (req, res) => {
 
 // Everything starting with /api/programs is handled in routes/programs.js
 app.use("/api/programs", programsRoutes);
+
+// Everything starting with /api/auth is handled in routes/auth.js
+app.use("/api/auth", authRoutes);
 
 
 /* ==========================================================================
