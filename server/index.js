@@ -7,6 +7,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import programsRoutes from "./routes/programs.js";
 
 const app = express();
 
@@ -36,6 +37,9 @@ app.use(express.json());
 app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
 });
+
+// Everything starting with /api/programs is handled in routes/programs.js
+app.use("/api/programs", programsRoutes);
 
 
 /* ==========================================================================
