@@ -1,71 +1,12 @@
 /* ==========================================================================
    SITE DATA
    ==========================================================================
-   Every list on the site lives here. The components loop over these
-   arrays, so to add a program, trainer or plan, just add an object.
+   The smaller lists on the site live here. The components loop over
+   these arrays, so to add a trainer or plan, just add an object.
+
+   The programs used to live here too. They now live in the database
+   (see server/seed.js) and come from the API instead.
    ========================================================================== */
-
-
-/* ==========================================================================
-   PROGRAMS (the main grid)
-   ========================================================================== */
-
-export const programs = [
-    {
-        id: 1,
-        name: "Strength Training",
-        category: "Strength",
-        image: "/images/program_strength.jpeg",
-        description: "Build real strength with coach-led barbell, dumbbell and kettlebell sessions.",
-        duration: "60 min",
-        intensity: "Medium – High",
-    },
-    {
-        id: 2,
-        name: "HIIT & Conditioning",
-        category: "Cardio",
-        image: "/images/program_hiit.jpeg",
-        description: "Fast, high-energy interval workouts that burn calories and build fitness.",
-        duration: "45 min",
-        intensity: "High",
-    },
-    {
-        id: 3,
-        name: "Boxing",
-        category: "Combat",
-        image: "/images/program_boxing.jpeg",
-        description: "Learn real boxing skills while getting fit, fast and focused.",
-        duration: "60 min",
-        intensity: "High",
-    },
-    {
-        id: 4,
-        name: "Yoga & Mobility",
-        category: "Mind & Body",
-        image: "/images/program_yoga.jpg",
-        description: "Improve flexibility, balance and recovery in a calm, welcoming class.",
-        duration: "60 min",
-        intensity: "Low – Medium",
-    },
-    {
-        id: 5,
-        name: "Spin",
-        category: "Cardio",
-        image: "/images/program_spin.jpeg",
-        description: "Ride to the beat in our high-energy indoor cycling studio.",
-        duration: "45 min",
-        intensity: "Medium – High",
-    },
-    {
-        id: 6,
-        name: "Personal Training",
-        category: "Strength",
-        image: "/images/program_personal.webp",
-        description: "One-on-one coaching with a plan built entirely around you.",
-        duration: "60 min",
-        intensity: "Tailored to you",
-    },
-];
 
 
 /* ==========================================================================

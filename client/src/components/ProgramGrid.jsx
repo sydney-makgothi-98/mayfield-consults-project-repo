@@ -1,12 +1,25 @@
-import { useState } from "react";
-import { programs } from "../data.js";
+import { useState, useEffect } from "react";
+import { getPrograms } from "../api.js";
 import ProgramCard from "./ProgramCard.jsx";
 
-// "All" plus each category once, taken straight from the data
-// e.g. ["All", "Strength", "Cardio", "Combat", "Mind & Body"]
-const categories = ["All", ...new Set(programs.map((program) => program.category))];
-
 function ProgramGrid() {
+
+    // The programs from the database, plus loading and error messages
+    const [programs, setPrograms] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    // Load the programs from the API once, when the page first opens
+    useEffect(() => {
+        getPrograms()
+            .then((data) => setPrograms(data))
+            .catch(() => setError("Could not load programs. Please try again later."))
+            .finally(() => setLoading(false));
+    }, []);
+
+    // "All" plus each category once, taken straight from the data
+    // e.g. ["All", "Strength", "Cardio", "Combat", "Mind & Body"]
+    const categories = ["All", ...new Set(programs.map((program) => program.category))];
 
     // Which filter button is selected
     const [activeCategory, setActiveCategory] = useState("All");
@@ -64,6 +77,10 @@ function ProgramGrid() {
                         {totalSessions} {totalSessions === 1 ? "session" : "sessions"}
                     </strong>
                 </p>
+
+                {/* LOADING AND ERROR MESSAGES */}
+                {loading && <p className="text-center">Loading programs...</p>}
+                {error && <p className="text-center text-red-400">{error}</p>}
 
                 {/* PROGRAM CARDS */}
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
