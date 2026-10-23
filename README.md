@@ -1,51 +1,41 @@
 # The Gorilla Pit
 
-A responsive website for The Gorilla Pit, a fictional gym, built with **React**, **Vite** and **Tailwind CSS**.
+A website for The Gorilla Pit, a fictional gym, with a real backend: programs are stored in a Postgres database, and members can sign up, log in and log out.
 
-## Running it
+**Full explanation:** see [How it all works.md](How%20it%20all%20works.md).
 
-```
-npm install
-npm run dev
-```
+## The three parts
 
-Then open the link Vite prints (usually http://localhost:5173).
+| Part | Folder | Built with | Lives on |
+|---|---|---|---|
+| Frontend | `client/` | React, Vite, Tailwind CSS | Vercel |
+| Backend API | `server/` | Node.js, Express | Railway |
+| Database | – | Postgres | Neon |
 
-| Command | What it does |
-|---|---|
-| `npm run dev` | Starts the dev server with live reload |
-| `npm run build` | Builds the finished site into `dist/` |
-| `npm run preview` | Serves the built site locally to check it |
+## Running it locally
 
-## Project structure
+1. Copy `server/.env.example` to `server/.env` and add your Neon `DATABASE_URL`.
+2. Set up the backend and fill the database:
+   ```
+   cd server
+   npm install
+   npm run seed
+   npm run dev
+   ```
+3. In a **second** terminal, start the frontend:
+   ```
+   cd client
+   npm install
+   npm run dev
+   ```
+4. Open http://localhost:5173
 
-```
-├── index.html                  # Page shell, React renders into #root
-├── public/
-│   └── images/                 # Photos and the hero video
-└── src/
-    ├── main.jsx                # Starts React
-    ├── App.jsx                 # Puts the page together
-    ├── index.css               # Tailwind import + theme colours
-    ├── data.js                 # All the lists: programs, trainers, plans...
-    └── components/
-        ├── Header.jsx          # Logo, nav links, mobile menu
-        ├── Hero.jsx            # Video background and headline
-        ├── MainContent.jsx     # About, stats, why us, trainers, membership
-        ├── ProgramGrid.jsx     # Program cards + category filter
-        ├── ProgramCard.jsx     # One program card
-        ├── SessionStepper.jsx  # The − / + sessions-per-week control
-        └── Footer.jsx          # Contact, hours, links
-```
+## API routes
 
-## How it works
-
-- **Data file:** every list on the site lives in `src/data.js` as an array of objects, and the components use `.map()` to turn each object into a card. To add a program, trainer or plan, add an object to the array.
-- **Filter:** `ProgramGrid` keeps the selected category in `useState`. The filter buttons are built from the categories in the data, so adding a new category adds a new button.
-- **SessionStepper:** a controlled component, the same pattern as `QuantityStepper`. It receives `value` and `onChange` as props and has no state of its own. `ProgramGrid` holds every card's sessions in one state object, which is how it shows the weekly total, and why the numbers survive switching filters.
-- **Tailwind:** the theme colours (`primary`, `accent`, `accent-2`, `muted`, `lavender`) and the animated background are defined in `@theme` in `src/index.css`, so they work as normal classes like `text-accent`.
-- **Mobile-first:** unprefixed classes are for phones, and `sm:`, `md:` and `lg:` add changes for bigger screens. For example, `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`.
-
-## Notes
-
-- Contact details, prices, trainers and the address are placeholders.
+| Method | Route | Does |
+|---|---|---|
+| GET | `/api/programs` | All programs from the database |
+| POST | `/api/auth/signup` | Create an account |
+| POST | `/api/auth/login` | Log in |
+| GET | `/api/auth/me` | Who is logged in |
+| POST | `/api/auth/logout` | Log out |
