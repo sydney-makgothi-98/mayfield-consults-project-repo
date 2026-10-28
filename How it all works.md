@@ -337,49 +337,179 @@ You need **two terminals**, one for each part.
 
 ---
 
-## 9. Putting it live
+## 9. Live DB and Backend
 
-Everything gets deployed **from GitHub**. Each service watches your repo and redeploys whenever you push.
+This section covers how the app was put on the internet: where each part lives, how it was set up, and why.
 
-### Step 1: Neon (database)
+```
+   Visitor's browser
+          │
+          ▼
+   ┌──────────────┐  fetch("/api/...")  ┌──────────────┐     SQL queries     ┌──────────────┐
+   │    Vercel    │ ──────────────────▶ │   Railway    │ ──────────────────▶ │     Neon     │
+   │  client/     │ ◀────────────────── │  server/     │ ◀────────────────── │  Postgres    │
+   │  React site  │        JSON         │  Express API │        rows         │  database    │
+   └──────────────┘                     └──────────────┘                     └──────────────┘
+```
 
-1. Sign up at **neon.tech**, and create a project (the free plan is fine).
-2. Click **Connect** and copy the connection string, which starts with `postgresql://`.
-3. Paste it into `server/.env` as `DATABASE_URL=...`
-4. In `server/`, run `npm run seed`. You should see "Tables ready" and "Added 6 programs".
+All three services are free. They're connected through the same GitHub repo and a few settings, so they work together without any extra glue code.
 
-### Step 2: Railway (backend)
+---
 
-1. Sign up at **railway.com** with GitHub, then click **New Project → Deploy from GitHub repo** and pick your repo.
-2. Open the service, go to **Settings → Root Directory**, and set it to `/server`.
-3. Go to **Variables**, and add `DATABASE_URL` with the same Neon string.
-4. Go to **Settings → Networking → Generate Domain**. You'll get a link like `https://something.up.railway.app`.
-5. Test it by visiting `https://something.up.railway.app/api/programs`. You should see the programs as JSON.
+### 9.1 The database: Neon
 
-Railway sees `package.json`, runs `npm install`, then runs `npm start`, which is `node index.js`.
+**What Neon is:** a company that runs Postgres databases on the internet. You don't install anything. They host the database, and give you an address (the **connection string**) that your code uses to connect.
 
-### Step 3: Vercel (frontend)
+**Why a hosted database?** The database has to be online 24/7, because Railway's server needs to reach it at any time. A database on your own laptop would only work while your laptop is on, and Railway can't reach it.
 
-1. Sign up at **vercel.com** with GitHub, then click **Add New → Project** and import your repo.
-2. Set **Root Directory** to `client`. Vercel detects Vite by itself.
-3. Under **Environment Variables**, add `VITE_API_URL` with your Railway link, **without** a slash at the end.
-4. Click **Deploy**. You'll get a link like `https://the-gorilla-pit.vercel.app`.
+**What was done, step by step:**
 
-### Step 4: Let the website talk to the API
+1. **Went to** [neon.tech](https://neon.tech) and signed up.
+2. **Created a project** called `gorilla-pit`:
+   - **Region:** AWS US East 2 (Ohio). That's where the database physically lives.
+   - **Services:** only **Postgres database** was turned on. **Better Auth was left off**, because we built our own login with bcrypt and a sessions table (see section 6).
+3. **Skipped the "Agent prompt"** that Neon offers. It would install Neon's own tools into the project, and we didn't need them.
+4. **Copied the connection string** using **Copy .env**, and pasted it into a new file, `server/.env`:
+   ```
+   DATABASE_URL="postgresql://neondb_owner:<password>@ep-....us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+   ```
+   The string contains everything needed to connect: the username (`neondb_owner`), the password, the server address and the database name (`neondb`). `sslmode=require` means the connection is **encrypted**.
+5. **Ran the seed script** from the `server` folder:
+   ```
+   npm run seed
+   ```
+   This connected to Neon, created the `users`, `sessions` and `programs` tables from `schema.sql`, and added the 6 programs. It printed "Tables ready" and "Added 6 programs".
+6. **Reset the database password** in Neon (**Postgres database → Roles → neondb_owner → ⋯ → Reset password**). The first password had been shared outside the `.env` file, and resetting makes the old one stop working. The new password was put into `.env`, and the connection was tested again.
 
-1. Back in **Railway → Variables**, add `CLIENT_URL` with your Vercel link, **without** a slash at the end.
-2. Railway redeploys. Open your Vercel link, and the programs should load and sign up should work.
+**How to see the data yourself:** in Neon, open **Postgres database → Tables**. You'll see `users`, `sessions` and `programs`, and can click into each one to view its rows. The **SQL Editor** lets you run queries like `SELECT * FROM programs;`.
 
-### Settings summary
+> **"SUSPENDED" or "Idle" in Neon is normal.** On the free plan, Neon puts the database to sleep when nobody is using it, to save resources. It wakes up by itself the moment the API connects. The first request after a sleep can take a second or two longer.
 
-| Where | Name | Value |
-|---|---|---|
-| `server/.env` (your computer) | `DATABASE_URL` | Neon connection string |
-| Railway | `DATABASE_URL` | Neon connection string |
-| Railway | `CLIENT_URL` | Your Vercel link |
-| Vercel | `VITE_API_URL` | Your Railway link |
+---
 
-> **If the live site says "Could not load programs":** the usual cause is a `CLIENT_URL` or `VITE_API_URL` that doesn't match exactly. Check there's no slash at the end, and that it starts with `https://`. Also note that Vite bakes `VITE_API_URL` in when it builds, so after changing it in Vercel, **redeploy**.
+### 9.2 The backend: Railway
+
+**What Railway is:** a company that runs your server code on their computers, 24/7, and gives it a public web address.
+
+**Why Railway was needed:** the Express server in `server/` has to be running for the website to get programs or log anyone in. On your own laptop it only runs while `npm run dev` is open, at `localhost`, which nobody else can reach. Railway runs it permanently, at a public address.
+
+**Why the backend and frontend are on different services:** Vercel is built for websites (files that get sent to the browser). Railway is built for servers (programs that keep running and wait for requests). Each part goes where it's best supported, which is also how it was done in class.
+
+**What was done, step by step:**
+
+1. **Went to** [railway.com](https://railway.com) and logged in with **GitHub**, so Railway could read the repo.
+2. **Created a new project** with **+ New → GitHub Repository**, and picked `mayfield-consults-project-repo`. A new project was used rather than the older `unique-creativity` one, so the two apps stay separate.
+3. **The first build failed.** That was expected: Railway looked at the top of the repo, where there's no server, only `client/` and `server/` folders.
+4. **Set the Root Directory to `/server`** (**Settings → Source → Add Root Directory**). Now Railway only looks in the server folder. It found `package.json`, ran `npm install`, then ran `npm start` (which is `node index.js`).
+5. **Set the region to EU West (Amsterdam)** (**Settings → Scale → Regions**). Railway had a problem with builds in US West at the time, so a different region was chosen.
+6. **Added the `DATABASE_URL` variable** (**Variables → + New Variable**), with the same Neon connection string as in `.env`, without the quote marks. **Railway doesn't have our `.env` file**, because it's never uploaded (see 9.4). Its Variables page does the same job.
+7. **Generated a public domain** (**Settings → Networking → Generate Domain**):
+   **https://mayfield-consults-project-repo-production.up.railway.app**
+8. **Deployed.** The first attempts failed with `502 Bad Gateway` at the "Create container" step. That was **Railway's own outage** (their banner mentioned an incident), not a code problem, which you can tell because the **Build** step had passed. A **Redeploy** worked, and the service showed **Active / Online**.
+
+**How we know it works:**
+
+| Address | Result |
+|---|---|
+| `/api/health` | `{"status":"ok"}`, so the server is running |
+| `/api/programs` | All 6 programs as JSON, read live from Neon |
+| `/api/auth/me` | `{"error":"Not logged in."}`, so the auth routes are working |
+
+**How Railway knows which port to use:** `index.js` has `const PORT = process.env.PORT || 3000;`. Railway gives the server a `PORT` automatically, and on your laptop there isn't one, so it uses 3000. The same code works in both places.
+
+**Automatic updates:** Railway watches the `main` branch. Every `git push` to `main` makes Railway rebuild and redeploy the server by itself.
+
+---
+
+### 9.3 The frontend: Vercel
+
+**What Vercel is:** a company that hosts websites. It downloads the code from GitHub, runs `npm run build` (Vite turns the React code into plain HTML, CSS and JavaScript), and serves those files from fast servers around the world.
+
+**Why Vercel:** the React app is just files once it's built. It doesn't need a server running all the time, so a website host like Vercel is the simplest and fastest option. It's also free, and it's what was used in class.
+
+**How it's set up:**
+
+1. **Go to** [vercel.com](https://vercel.com) and log in with **GitHub**.
+2. Click **Add New → Project**, and **Import** `mayfield-consults-project-repo`.
+3. Set **Root Directory** to `client`, since that's where the React app is. Vercel detects **Vite** automatically, so it knows to run `npm run build` and serve the `dist` folder.
+4. Add the **Environment Variable** `VITE_API_URL` = `https://mayfield-consults-project-repo-production.up.railway.app` (no slash at the end). This tells the website where the API lives. In `client/src/api.js`:
+   ```js
+   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+   ```
+   On Vercel, `VITE_API_URL` is set, so it points at Railway. On your laptop it isn't set, so it falls back to `localhost:3000`.
+5. Click **Deploy**. Vercel gives the site a public link: **`<your Vercel link>`**.
+
+**The last connection: `CLIENT_URL` on Railway.** The API only accepts requests from websites it trusts (the CORS list in `server/index.js`). Once Vercel gives you a link, add it in **Railway → Variables** as `CLIENT_URL` (no slash at the end). Railway redeploys, and the API starts accepting requests from your live site.
+
+```js
+const allowedSites = ["http://localhost:5173"];
+if (process.env.CLIENT_URL) {
+    allowedSites.push(process.env.CLIENT_URL);
+}
+```
+
+> **`VITE_API_URL` is not a secret.** It's the API's public address, and it ends up inside the website's JavaScript, which anyone can read. That's fine. Anything starting with `VITE_` is visible to everyone, so **never put a password in a `VITE_` variable.**
+
+> **If you change `VITE_API_URL` in Vercel, redeploy.** Vite copies the value into the code at build time, so the change only takes effect after a new build.
+
+**Automatic updates:** like Railway, Vercel redeploys every time you push to `main`.
+
+---
+
+### 9.4 Why `.gitignore` matters
+
+`.gitignore` is a list of files and folders that **git must never save or upload**. Ours is:
+
+```
+node_modules
+dist
+.vite
+
+# Secrets - never commit these
+.env
+```
+
+**`.env` is the important one.** It holds the database connection string, which includes the password. The GitHub repo is what Railway and Vercel read from, and it could be public or shared with a lecturer. If `.env` were uploaded:
+
+- anyone who could see the repo could **connect to the database** and read, change or delete everything, including every user's account;
+- removing the file later **wouldn't be enough**, because git keeps history, so the password would still be in old commits. The only real fix would be resetting the password, which is exactly what had to be done once during setup, just to be safe.
+
+**How the secrets reach the live server instead:** they're typed into Railway's **Variables** page. Railway keeps them private and gives them to the server when it starts, as `process.env.DATABASE_URL`. That's the same thing `dotenv` does from the `.env` file on your laptop. **Same code, different source of secrets.**
+
+**`.env.example`** *is* uploaded on purpose. It lists which settings are needed, with fake values, so anyone setting up the project knows what to fill in.
+
+**The other ignored items:**
+
+| Ignored | Why |
+|---|---|
+| `node_modules` | Thousands of package files that `npm install` can rebuild at any time from `package.json`. Uploading them would make the repo huge, and Railway and Vercel install their own copies anyway. |
+| `dist` | The built website. Vercel builds its own copy, so the repo only needs the source code. |
+| `.vite` | Vite's temporary cache, which is only useful on your own computer. |
+
+**How to prove it at assessment:**
+
+```
+git check-ignore -v server/.env
+```
+
+It prints `.gitignore:6:.env  server/.env`, which means git is ignoring it. You can also open the repo on GitHub and show that no `.env` file exists anywhere, only the `.env.example` files.
+
+---
+
+### 9.5 Settings summary
+
+| Where | Name | Value | Secret? |
+|---|---|---|---|
+| `server/.env` (your laptop only) | `DATABASE_URL` | Neon connection string | **Yes** |
+| Railway → Variables | `DATABASE_URL` | Neon connection string | **Yes** |
+| Railway → Variables | `CLIENT_URL` | Your Vercel link | No |
+| Vercel → Environment Variables | `VITE_API_URL` | `https://mayfield-consults-project-repo-production.up.railway.app` | No |
+
+**Live links:**
+- **API:** https://mayfield-consults-project-repo-production.up.railway.app/api/programs
+- **Website:** `<your Vercel link>`
+
+> **If the live site says "Could not load programs":** check that `CLIENT_URL` (Railway) and `VITE_API_URL` (Vercel) match the real links exactly. They should start with `https://` and have no slash at the end. After changing `VITE_API_URL`, redeploy on Vercel.
 
 ---
 
@@ -387,11 +517,11 @@ Railway sees `package.json`, runs `npm install`, then runs `npm start`, which is
 
 | Requirement | Where to show it |
 |---|---|
-| Working API, live, reading from Postgres | Visit `https://<railway-link>/api/programs`, then show `routes/programs.js` and `db.js` |
+| Working API, live, reading from Postgres | Visit https://mayfield-consults-project-repo-production.up.railway.app/api/programs, then show `routes/programs.js` and `db.js` |
 | Schema you can explain | `server/schema.sql` and section 3 of this guide |
 | Live URL where the whole app works | Your Vercel link: the programs load, and sign up and sign in work |
 | Real sign up / login, survives a refresh | Sign up, refresh, and you're still signed in. Explain `/api/auth/me` (section 6) |
-| `.env` excluded from git | `git check-ignore -v server/.env`, `.gitignore`, and no `.env` on GitHub |
+| `.env` excluded from git | `git check-ignore -v server/.env`, `.gitignore`, and no `.env` on GitHub (section 9.4) |
 
 ---
 
