@@ -4,10 +4,10 @@
    Run with:  npm run seed
 
    1. Creates the tables from schema.sql (if they don't exist yet)
-   2. Empties the programs table
-   3. Fills it with the programs below
+   2. Empties the programs and plans tables
+   3. Fills them with the programs and plans below
 
-   It never touches users or sessions, so it's safe to run again.
+   It never touches users, sessions or orders, so it's safe to run again.
    ========================================================================== */
 
 import fs from "fs";
@@ -64,6 +64,31 @@ const programs = [
     },
 ];
 
+// Prices are in cents: R80 = 8000
+const plans = [
+    {
+        name: "Day Pass",
+        price: 8000,
+        period: "per day",
+        featured: false,
+        perks: ["Full gym floor access", "Changing rooms & lockers", "One group class"],
+    },
+    {
+        name: "Monthly",
+        price: 45000,
+        period: "per month",
+        featured: true,
+        perks: ["Unlimited gym access", "All group classes", "Free fitness assessment", "Bring a friend once a month"],
+    },
+    {
+        name: "Annual",
+        price: 450000,
+        period: "per year",
+        featured: false,
+        perks: ["Everything in Monthly", "Two months free", "Two personal training sessions", "Four guest passes"],
+    },
+];
+
 async function seed() {
 
     // 1. Create the tables
@@ -84,6 +109,19 @@ async function seed() {
     }
 
     console.log(`Added ${programs.length} programs`);
+
+    // 4. Same again for the membership plans
+    await db.query("TRUNCATE plans RESTART IDENTITY");
+
+    for (const plan of plans) {
+        await db.query(
+            `INSERT INTO plans (name, price, period, featured, perks)
+             VALUES ($1, $2, $3, $4, $5)`,
+            [plan.name, plan.price, plan.period, plan.featured, plan.perks]
+        );
+    }
+
+    console.log(`Added ${plans.length} plans`);
 
     // Close the connection so the script can finish
     await db.end();
