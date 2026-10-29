@@ -437,7 +437,7 @@ All three services are free. They're connected through the same GitHub repo and 
    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
    ```
    On Vercel, `VITE_API_URL` is set, so it points at Railway. On your laptop it isn't set, so it falls back to `localhost:3000`.
-5. Click **Deploy**. Vercel gives the site a public link: **`<your Vercel link>`**.
+5. Click **Deploy**. Vercel gives the site a public link: **https://mayfield-consults-project-repo.vercel.app**.
 
 **The last connection: `CLIENT_URL` on Railway.** The API only accepts requests from websites it trusts (the CORS list in `server/index.js`). Once Vercel gives you a link, add it in **Railway → Variables** as `CLIENT_URL` (no slash at the end). Railway redeploys, and the API starts accepting requests from your live site.
 
@@ -502,12 +502,12 @@ It prints `.gitignore:6:.env  server/.env`, which means git is ignoring it. You 
 |---|---|---|---|
 | `server/.env` (your laptop only) | `DATABASE_URL` | Neon connection string | **Yes** |
 | Railway → Variables | `DATABASE_URL` | Neon connection string | **Yes** |
-| Railway → Variables | `CLIENT_URL` | Your Vercel link | No |
+| Railway → Variables | `CLIENT_URL` | `https://mayfield-consults-project-repo.vercel.app` | No |
 | Vercel → Environment Variables | `VITE_API_URL` | `https://mayfield-consults-project-repo-production.up.railway.app` | No |
 
 **Live links:**
 - **API:** https://mayfield-consults-project-repo-production.up.railway.app/api/programs
-- **Website:** `<your Vercel link>`
+- **Website:** https://mayfield-consults-project-repo.vercel.app
 
 > **If the live site says "Could not load programs":** check that `CLIENT_URL` (Railway) and `VITE_API_URL` (Vercel) match the real links exactly. They should start with `https://` and have no slash at the end. After changing `VITE_API_URL`, redeploy on Vercel.
 
@@ -519,7 +519,7 @@ It prints `.gitignore:6:.env  server/.env`, which means git is ignoring it. You 
 |---|---|
 | Working API, live, reading from Postgres | Visit https://mayfield-consults-project-repo-production.up.railway.app/api/programs, then show `routes/programs.js` and `db.js` |
 | Schema you can explain | `server/schema.sql` and section 3 of this guide |
-| Live URL where the whole app works | Your Vercel link: the programs load, and sign up and sign in work |
+| Live URL where the whole app works | https://mayfield-consults-project-repo.vercel.app: the programs load, and sign up and sign in work |
 | Real sign up / login, survives a refresh | Sign up, refresh, and you're still signed in. Explain `/api/auth/me` (section 6) |
 | `.env` excluded from git | `git check-ignore -v server/.env`, `.gitignore`, and no `.env` on GitHub (section 9.4) |
 

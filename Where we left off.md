@@ -23,32 +23,30 @@ A record of everything done on this project so far, and exactly where things sta
 | Piece | Status |
 |---|---|
 | Neon database | ✅ Working. Tables `users`, `sessions`, `programs` created, 6 programs seeded |
-| Railway API | ✅ Online, but running an **older** deployment |
+| Railway API | ✅ Online, with `CLIENT_URL` picked up |
 | `DATABASE_URL` on Railway | ✅ Set |
-| `CLIENT_URL` on Railway | ✅ Saved as `https://mayfield-consults-project-repo.vercel.app` - **waiting for a redeploy to take effect** |
-| `VITE_API_URL` on Vercel | ✅ Fixed (set as **Config**, not Secret). Checked: the live site now points at Railway |
-| Live website | ⚠️ Shows "Could not load programs" - only because Railway hasn't redeployed with `CLIENT_URL` yet |
+| `CLIENT_URL` on Railway | ✅ `https://mayfield-consults-project-repo.vercel.app` - the API now trusts the website |
+| `VITE_API_URL` on Vercel | ✅ Fixed (set as **Config**, not Secret). The live site points at Railway |
+| Live website | ✅ Working |
 
-**Why it's stuck:** Railway had a platform-wide problem ("Deployments stuck in initializing") and **paused all deploys** ("Limited Access - Deploys have been paused temporarily"). Nothing is wrong with our code or settings.
+Railway had a platform-wide deploy pause on 28 Oct 2026. Once it ended, Railway redeployed with `CLIENT_URL` and the site started working.
+
+**Live test (29 Oct 2026), all passed against the real API:**
+- 6 programs returned
+- Sign up → account created and logged in
+- `/api/auth/me` with the token → still logged in (what a page refresh does)
+- Log out → the token stops working
+- Wrong password → "Wrong email or password."
+- Log in again → works
+
+The test account was deleted afterwards, so the database is clean (0 users, 0 sessions, 6 programs).
 
 ---
 
 ## What to do next
 
-1. **Wait** until Railway removes the "Limited Access" pause (follow **View details** in the yellow banner).
-2. In Railway → **Deployments** → **⋯** on the ACTIVE deployment → **Redeploy** (if it doesn't redeploy by itself).
-3. When the new deployment says **ACTIVE**, open https://mayfield-consults-project-repo.vercel.app and refresh - the programs should appear.
-4. Test the live site end to end:
-   - Programs load and the category filter works
-   - Sign up with a new account → name shows in the header
-   - Refresh the page → still signed in
-   - Sign out → Sign in button comes back
-   - Sign in again with the same account
-   - No sideways scrolling on a phone-sized screen
-5. In **How it all works.md**, replace the `<your Vercel link>` placeholders with `https://mayfield-consults-project-repo.vercel.app` and tick off the checklist.
-6. Push to `main`.
-
-**Quick check that Railway has picked up `CLIENT_URL`:** the API's response to a request from the Vercel site should include the header `Access-Control-Allow-Origin: https://mayfield-consults-project-repo.vercel.app`. Before the redeploy, that header is missing.
+1. Open https://mayfield-consults-project-repo.vercel.app yourself and try it: sign up, refresh, sign out, sign in. Also check it on your phone.
+2. Practise explaining `schema.sql`, `routes/auth.js` and the folder structure for the assessment (see **How it all works.md**, section 10).
 
 ---
 
