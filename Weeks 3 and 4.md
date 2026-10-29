@@ -208,6 +208,152 @@ Everything was tested on the live site: the programs load, signing up works, mem
 
 ---
 
-## Week 4
+## Week 4: Taking payments
 
-*To be added.*
+### The target
+
+At the end of Week 3, people could sign up and log in, but they couldn't **buy** anything. The "Join" buttons on the membership plans didn't do anything.
+
+The goal for Week 4 was to make the **Join** buttons actually take payment:
+
+- click **Join Monthly** → pay on a secure payment page → land on a page that says **"Payment successful"**;
+- every purchase is **saved** in the database and tied to a real member;
+- an order is only marked **"paid"** when the payment company itself confirms the money came through.
+
+It all runs in **test mode**: real-looking payments with fake money, using a test card number. Nobody gets charged.
+
+---
+
+### The simple picture: back to the restaurant
+
+| Restaurant | Our app | What it does |
+|---|---|---|
+| **The order slip** | The `orders` table | One slip per purchase: who ordered, how much, and is it paid yet? |
+| **The lines on the slip** | The `order_items` table | What was bought, and at what price |
+| **The card machine** | **Stripe** | Takes the card payment. We never touch card numbers. |
+| **The bank's confirmation slip** | The **webhook** | Stripe calling our kitchen to say "the money came through" |
+| **"Members only" sign at the till** | The **login check** (middleware) | You must be signed in to buy |
+
+---
+
+### Step 1: New tables in the database
+
+**What was done:** three new tables were added and pushed to the live Neon database.
+
+| Table | What it holds |
+|---|---|
+| `plans` | The 3 membership plans: Day Pass, Monthly, Annual, with their prices. These used to be typed into the website's code (`data.js`); now they live in the database like the programs do. |
+| `orders` | One row per purchase: **who** bought it (`user_id`), the **total**, the **status** (`pending` or `paid`), and Stripe's reference number. |
+| `order_items` | What was bought in each order, and **at what price**. |
+
+**Why prices are saved in cents** (R450 is saved as `45000`): it's what Stripe uses, and whole numbers never have rounding mistakes. Money and decimals don't mix well in computers.
+
+**Why `order_items` copies the name and price:** if the gym raises the Monthly price next year, old orders should still show what the person **actually paid**. Like a till slip, it never changes after it's printed.
+
+**Why the plans moved into the database:** the server must look up the real price itself (see Step 4). If the price only lived in the website's code, the server would have nowhere trustworthy to check it.
+
+---
+
+### Step 2: Stripe
+
+**What Stripe is:** a payment company, the "card machine" for websites. Millions of businesses use it.
+
+**Why Stripe:**
+- **We never see or store card numbers.** People type their card details on **Stripe's own page**, not ours. That's much safer, and it means we don't have to meet the strict security rules for handling cards.
+- **Test mode** lets us practise with fake money and the test card `4242 4242 4242 4242`.
+- It's free to set up, and it's what was used in class.
+
+**The Stripe secret key** (starts with `sk_test_`) goes in the server's `.env` file and in Railway's Variables, **never** in the website code and **never** on GitHub. Just like the database password in Week 3.
+
+---
+
+### Step 3: The login check (middleware)
+
+**What was done:** a small piece of code called `requireLogin` (in `server/middleware/requireLogin.js`) was added.
+
+**"Middleware"** is code that runs **before** a route, like a bouncer standing in front of a door. It looks at the member's wristband (the login token from Week 3):
+- **valid wristband** → lets them through, and tells the route who they are;
+- **no wristband, or a fake one** → stops them with "Please sign in first."
+
+It stands in front of **checkout** and **order lookup**.
+
+**Why:** every order must belong to a real member, otherwise we'd have payments with no idea who made them. On the website, clicking **Join** while signed out simply opens the sign-in box.
+
+---
+
+### Step 4: The checkout route
+
+**What was done:** a new address, `POST /api/orders/checkout`. When a signed-in member clicks **Join**:
+
+1. The website sends **only which plan** they want (e.g. plan number 2), **never the price**.
+2. The server **looks up the real price** in the database.
+3. It saves an **order** marked `pending`, plus an **order item** saying what was bought and for how much.
+4. It asks **Stripe** to create a secure payment page for that amount, and attaches our order number to it.
+5. It sends the payment page's address back, and the website takes the member there.
+
+**Why never trust a price from the browser?** Anything on the visitor's side can be changed by the visitor. A clever person could edit the request to say "Annual membership, R1". By looking the price up ourselves, the price is always ours to decide. *(This was tested: sending a fake price is simply ignored.)*
+
+---
+
+### Step 5: The webhook (the only thing that marks an order "paid")
+
+**What a webhook is:** normally the website calls our server. A webhook is the other way round: **Stripe calls our server** to tell us something happened. When a payment goes through, Stripe sends a message to `POST /api/webhooks/stripe`.
+
+**What was done:** when that message arrives, the server:
+1. **Checks the signature.** Every message from Stripe is "signed" with a secret that only Stripe and our server know (`STRIPE_WEBHOOK_SECRET`). A fake message without the right signature is rejected.
+2. If it's a completed, **paid** checkout, it finds our order number in the message and marks that order **`paid`**.
+
+**Why is this the ONLY place that marks an order as paid?**
+- After paying, Stripe sends the member back to our success page. But **anyone could type that page's address** without paying.
+- The member might also close the tab before getting back to our site, even though they paid.
+- The webhook comes **straight from Stripe to our server**, with a signature we can check. It's the bank's own confirmation slip, not the customer saying "trust me, I paid".
+
+**Testing it locally:** Stripe can't reach a laptop directly, so the **Stripe CLI** (a small Stripe program) passes the messages along: `stripe listen --forward-to localhost:3000/api/webhooks/stripe`.
+
+---
+
+### Step 6: The "Join" buttons
+
+**What was done:** the membership plans now load from the database, and each **Join** button:
+- if you're **not signed in** → opens the sign-in box;
+- if you **are** signed in → says "Loading...", calls the checkout route, and sends you to Stripe's payment page.
+
+---
+
+### Step 7: The order lookup and the success page
+
+**What was done:**
+- A new address, `GET /api/orders/:id`, gives back one order and its status. It only shows **your own** orders, so nobody can peek at someone else's by guessing a number.
+- After paying, Stripe sends the member to the success page (`/?order=12`). It shows the order number, the plan, the total and the status.
+
+**Why it checks a few times:** Stripe sends the member back **straight away**, but the webhook message can arrive a second or two **later**. So if the order still says `pending`, the page waits 2 seconds and checks again, up to 5 times. Usually it flips from **"Confirming your payment..."** to **"Payment successful!"** within a moment. If it still hasn't come through, it says so honestly and asks the member to refresh in a minute, rather than pretending it's paid.
+
+---
+
+### Step 8: Making it work on the live site
+
+The same pieces from Week 3, plus three settings:
+
+| Where | Setting | What it is |
+|---|---|---|
+| Railway → Variables | `STRIPE_SECRET_KEY` | The Stripe test secret key (`sk_test_...`) |
+| Railway → Variables | `STRIPE_WEBHOOK_SECRET` | The signing secret of the live webhook (`whsec_...`) |
+| Stripe → Webhooks | Endpoint address | `https://mayfield-consults-project-repo-production.up.railway.app/api/webhooks/stripe`, listening for `checkout.session.completed` |
+
+Vercel needs no changes: the website already knows where the server is.
+
+---
+
+### How it was tested
+
+Everything was tested before going near real Stripe keys:
+
+- **20 server checks:** checkout is blocked when signed out and with a fake wristband; an unknown plan is refused; the order saves the **database** price even when a fake price is sent; members can only see their own orders; webhooks with no signature, or the wrong secret, are rejected and the order stays `pending`; an "unpaid" message doesn't mark it paid; a properly signed "paid" message does.
+- **17 website checks** against the real database: plans and prices load (R80, R450, R4 500); Join while signed out opens sign-in; the success page shows "Confirming..." and then **changes by itself** to "Payment successful" when the webhook arrives; it works on a phone-sized screen with no sideways scrolling; signed-out visitors can't see an order.
+- All test accounts and orders were deleted afterwards.
+
+---
+
+### The one-minute version (for the investor)
+
+> "Members can now buy a membership straight from the website. They click Join, pay on Stripe's secure page, and land on a confirmation page. We never see their card details; Stripe handles that. Every purchase is recorded in our database against a real member account, and the price always comes from our own records, so it can't be tampered with. Most importantly, an order is only marked as paid when Stripe itself confirms the money arrived, through a signed message we can verify. So nobody can fake a payment by visiting the right web page."
