@@ -330,17 +330,118 @@ It stands in front of **checkout** and **order lookup**.
 
 ---
 
-### Step 8: Making it work on the live site
+### Step 8: Setting up Stripe and going live
 
-The same pieces from Week 3, plus three settings:
+This is everything that was done outside the code: on Stripe's website, on my laptop, and on Railway.
 
-| Where | Setting | What it is |
+#### 8.1 Creating the Stripe account (a "sandbox")
+
+1. **Signed up at stripe.com.**
+2. On the "What do you need?" screen, kept only **Accept online payments** ticked. **Subscriptions** (repeat billing) and **Build a platform** (marketplaces paying other sellers) were unticked, because we just take a one-off payment.
+3. On "How do you want to manage tax, fraud and disputes?", chose **Pick what you need**. The "Let us handle it" option makes Stripe the official seller, adds a 3.5% fee and is built for digital products. We just need plain Stripe Checkout.
+4. Chose **Go to sandbox**, *not* "Get your live account".
+
+**What a sandbox is:** Stripe's practice area. Everything works exactly like the real thing, but with **fake money**, and no business or bank details are needed. The dashboard shows a "Sandbox" banner at the top so you always know.
+
+#### 8.2 Getting the secret key
+
+- In the sandbox dashboard: **Developers** (bottom left) → **API keys** → **Secret key** → **Reveal**. It starts with `sk_test_`. The `test` part means it can only ever move fake money.
+- It was put in `server/.env` as `STRIPE_SECRET_KEY`. Git ignores that file, so the key never goes to GitHub.
+- It was checked by starting a real test checkout from the laptop. Stripe sent back a payment page for R450.
+
+> **Safety net:** if the key is ever missing, Stripe would normally crash the whole server. `server/stripe.js` uses a stand-in instead, so the rest of the site keeps working and only checkout shows an error. That's why the code could be pushed live **before** the key was added to Railway, with nothing breaking.
+
+#### 8.3 Testing the webhook on the laptop (Stripe CLI)
+
+**The problem:** Stripe's computers can't reach `localhost`. My laptop isn't on the public internet.
+
+**The fix:** the **Stripe CLI**, a small program from Stripe. It logs in to my Stripe account, picks up the webhook messages and **passes them on to my laptop**, like a mail forwarding service.
+
+1. **Installed it** with Windows' built-in installer, in PowerShell:
+   ```
+   winget install Stripe.StripeCli
+   ```
+   *Hiccup:* afterwards, `stripe` was "not recognised". Windows only tells **new** terminals about newly installed programs. Fix: restart VS Code, or run it using its full file path.
+2. **Logged in** with `stripe login`. The browser asked which environment to connect, and **kinematicTechSolutions sandbox** was chosen, because it's the same account the secret key came from. *(If the CLI were connected to a different account, payments would happen in one place while the CLI listened in another, and orders would stay "pending" forever.)*
+3. **Started forwarding:**
+   ```
+   stripe listen --events checkout.session.completed --forward-to localhost:3000/api/webhooks/stripe
+   ```
+   *Hiccup:* the newest CLI refuses to start unless you say **which** events you want, so `--events checkout.session.completed` was added. That's the only event our code cares about: "a checkout finished".
+4. It printed a **signing secret** (`whsec_...`), which went into `server/.env` as `STRIPE_WEBHOOK_SECRET`.
+
+So running it locally takes **three terminals**: the server, the website, and `stripe listen`.
+
+#### 8.4 Pushing the code
+
+All the Week 4 work was built on a separate **branch** (`week-4-stripe`), in small commits:
+1. the new tables;
+2. the Stripe connection and the login check;
+3. the checkout, order lookup and webhook routes;
+4. the Join buttons;
+5. the success page;
+6. the docs.
+
+It was then **merged into `main` and pushed**. Like in Week 3, that made **Vercel** (website) and **Railway** (server) rebuild themselves automatically.
+
+The new tables had already been added to the live **Neon** database by running `npm run seed`. It only *adds* tables and refreshes the programs and plans; it never touches members or orders.
+
+#### 8.5 Wiring the live webhook: Stripe → Railway
+
+On the laptop, the CLI forwards the messages. On the live site, Stripe sends them **straight to Railway**, because Railway's address is public. Stripe just needs to be told where to send them.
+
+In the Stripe sandbox: **Developers → Webhooks → Add destination**:
+
+| Setting | Chosen | Why |
 |---|---|---|
-| Railway → Variables | `STRIPE_SECRET_KEY` | The Stripe test secret key (`sk_test_...`) |
-| Railway → Variables | `STRIPE_WEBHOOK_SECRET` | The signing secret of the live webhook (`whsec_...`) |
-| Stripe → Webhooks | Endpoint address | `https://mayfield-consults-project-repo-production.up.railway.app/api/webhooks/stripe`, listening for `checkout.session.completed` |
+| Scope | **Your account** | The payments happen in our own account (not "connected accounts", which is for marketplaces) |
+| Payload style | **Snapshot** | The message includes the full payment details, including our order number, which the code reads directly |
+| Event | **`checkout.session.completed`** | "A checkout finished": the only event we need |
+| Destination type | **Webhook endpoint** | Stripe sends a normal web request to a web address |
+| Endpoint URL | `https://mayfield-consults-project-repo-production.up.railway.app/api/webhooks/stripe` | Our live server's webhook route |
 
-Vercel needs no changes: the website already knows where the server is.
+After creating it, Stripe showed this destination's own **signing secret** (`whsec_...`).
+
+```
+   Member pays on Stripe's page
+              │
+              ▼
+   ┌──────────────────┐   "checkout.session.completed"   ┌──────────────────────────────┐
+   │      STRIPE      │ ───────────────────────────────▶ │           RAILWAY            │
+   │  (card machine)  │   signed with the webhook secret │  POST /api/webhooks/stripe   │
+   └──────────────────┘                                  │  1. checks the signature     │
+              │                                          │  2. marks the order "paid"   │
+              │ sends the member back                    └──────────────┬───────────────┘
+              ▼                                                         │ UPDATE orders
+   ┌──────────────────┐   "is order 12 paid yet?"        ┌──────────────▼───────────────┐
+   │      VERCEL      │ ───────────────────────────────▶ │        NEON database         │
+   │   success page   │ ◀─────────────── "paid" ──────── │    (through the Railway API) │
+   └──────────────────┘                                  └──────────────────────────────┘
+```
+
+#### 8.6 Giving Railway the Stripe secrets
+
+Railway doesn't have our `.env` file (it's never uploaded), so in **Railway → server → Variables** two new settings were added. Railway then redeployed:
+
+| Name | Value |
+|---|---|
+| `STRIPE_SECRET_KEY` | The same `sk_test_...` key as in the laptop's `.env` |
+| `STRIPE_WEBHOOK_SECRET` | The `whsec_...` from the **live webhook destination** (8.5) |
+
+> **There are two different webhook secrets, and that's correct.** Each place Stripe sends messages to gets its own secret. The laptop's `.env` keeps the one from `stripe listen`, and Railway has the one from the dashboard webhook. If they were swapped, the signature check would fail and orders would never be marked paid.
+
+Vercel needed **no changes**: the website already knew where the server was from Week 3.
+
+#### 8.7 Everything in one place
+
+| Where | Setting | Secret? |
+|---|---|---|
+| `server/.env` (laptop only) | `DATABASE_URL`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (from `stripe listen`) | **Yes** |
+| Railway → Variables | `DATABASE_URL`, `CLIENT_URL`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (from the dashboard webhook) | **Yes** (except `CLIENT_URL`) |
+| Vercel → Environment Variables | `VITE_API_URL` | No |
+| Stripe sandbox → Webhooks | Destination pointing at Railway's `/api/webhooks/stripe`, event `checkout.session.completed` | – |
+
+> **Housekeeping:** the test secret key was pasted into a chat during setup. It can only move fake money, but as good practice it should be **rolled** (Stripe → API keys → ⋯ → Roll key) before the assessment, and the new key updated in both `server/.env` and Railway.
 
 ---
 
@@ -350,7 +451,16 @@ Everything was tested before going near real Stripe keys:
 
 - **20 server checks:** checkout is blocked when signed out and with a fake wristband; an unknown plan is refused; the order saves the **database** price even when a fake price is sent; members can only see their own orders; webhooks with no signature, or the wrong secret, are rejected and the order stays `pending`; an "unpaid" message doesn't mark it paid; a properly signed "paid" message does.
 - **17 website checks** against the real database: plans and prices load (R80, R450, R4 500); Join while signed out opens sign-in; the success page shows "Confirming..." and then **changes by itself** to "Payment successful" when the webhook arrives; it works on a phone-sized screen with no sideways scrolling; signed-out visitors can't see an order.
+- **With the real Stripe key:** a real test checkout page was created from the laptop, and then from the live site.
+- **On the live site, after setup:** the plans load from the database; checkout is blocked when signed out; when signed in, Stripe creates a payment page (so Railway has the key); the live webhook route is up and rejects a fake signature.
 - All test accounts and orders were deleted afterwards.
+
+**The assessment run** (start to finish, on the live site):
+1. Open https://mayfield-consults-project-repo.vercel.app and **sign up**.
+2. Click **Join Monthly**, and you land on Stripe's page showing R450.
+3. Pay with `4242 4242 4242 4242`, any future date, any CVC.
+4. Land on **"Payment successful!"** with **Status: Paid**.
+5. To show the `orders` table: in **Neon → Tables → orders**, the new row has `status = paid`. In **Stripe → Webhooks → your destination**, the delivery shows as successful.
 
 ---
 
