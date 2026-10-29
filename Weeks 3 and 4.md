@@ -308,7 +308,7 @@ It stands in front of **checkout** and **order lookup**.
 - The member might also close the tab before getting back to our site, even though they paid.
 - The webhook comes **straight from Stripe to our server**, with a signature we can check. It's the bank's own confirmation slip, not the customer saying "trust me, I paid".
 
-**Testing it locally:** Stripe can't reach a laptop directly, so the **Stripe CLI** (a small Stripe program) passes the messages along: `stripe listen --forward-to localhost:3000/api/webhooks/stripe`.
+**Testing it locally:** Stripe can't reach a laptop directly, so the **Stripe CLI** (a small Stripe program) passes the messages along: `stripe listen --events checkout.session.completed --forward-to localhost:3000/api/webhooks/stripe`.
 
 ---
 

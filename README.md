@@ -31,7 +31,7 @@ A website for The Gorilla Pit, a fictional gym, with a real backend: programs an
    ```
 4. In a **third** terminal, forward Stripe's webhook messages to your computer (needs the [Stripe CLI](https://docs.stripe.com/stripe-cli)):
    ```
-   stripe listen --forward-to localhost:3000/api/webhooks/stripe
+   stripe listen --events checkout.session.completed --forward-to localhost:3000/api/webhooks/stripe
    ```
    Copy the `whsec_...` it prints into `STRIPE_WEBHOOK_SECRET`, and restart the server.
 5. Open http://localhost:5173, sign in, click **Join** on a plan, and pay with the test card `4242 4242 4242 4242` (any future date, any CVC).
