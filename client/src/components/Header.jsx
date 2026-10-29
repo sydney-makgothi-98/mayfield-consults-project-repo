@@ -1,11 +1,11 @@
 import { useState } from "react";
 
 const navLinks = [
-    { href: "#about", label: "About" },
-    { href: "#programs", label: "Programs" },
-    { href: "#trainers", label: "Trainers" },
-    { href: "#membership", label: "Membership" },
-    { href: "#contact", label: "Contact" },
+    { href: "/#about", label: "About" },
+    { href: "/#programs", label: "Programs" },
+    { href: "/#trainers", label: "Trainers" },
+    { href: "/#membership", label: "Membership" },
+    { href: "/#contact", label: "Contact" },
 ];
 
 function Header({ user, onSignInClick, onSignOut }) {
@@ -18,7 +18,7 @@ function Header({ user, onSignInClick, onSignOut }) {
 
             <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 md:px-8">
 
-                <a href="#top" className="font-heading text-xl font-extrabold text-white md:text-2xl">
+                <a href="/#top" className="font-heading text-xl font-extrabold text-white md:text-2xl">
                     The Gorilla Pit
                 </a>
 

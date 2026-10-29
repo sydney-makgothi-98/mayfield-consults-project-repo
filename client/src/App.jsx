@@ -5,6 +5,11 @@ import Hero from "./components/Hero.jsx";
 import MainContent from "./components/MainContent.jsx";
 import Footer from "./components/Footer.jsx";
 import AuthForm from "./components/AuthForm.jsx";
+import SuccessPage from "./components/SuccessPage.jsx";
+
+// After paying, Stripe sends people back to "/?order=12".
+// If there's an order number in the address, we show the success page.
+const orderId = new URLSearchParams(window.location.search).get("order");
 
 function App() {
 
@@ -52,9 +57,14 @@ function App() {
                 onSignOut={handleSignOut}
             />
 
-            <Hero />
-
-            <MainContent />
+            {orderId ? (
+                <SuccessPage orderId={orderId} />
+            ) : (
+                <>
+                    <Hero />
+                    <MainContent user={user} onSignInClick={() => setShowAuth(true)} />
+                </>
+            )}
 
             <Footer />
 
