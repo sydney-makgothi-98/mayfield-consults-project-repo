@@ -1,7 +1,8 @@
-import { stats, features, trainers, plans } from "../data.js";
+import { stats, features, trainers } from "../data.js";
 import ProgramGrid from "./ProgramGrid.jsx";
+import MembershipPlans from "./MembershipPlans.jsx";
 
-function MainContent() {
+function MainContent({ user, onSignInClick }) {
     return (
         <main>
 
@@ -108,58 +109,7 @@ function MainContent() {
 
 
             {/* MEMBERSHIP SECTION */}
-            <section id="membership" className="bg-white/5 px-4 py-16 md:px-8">
-
-                <div className="mx-auto max-w-6xl">
-
-                    <h2 className="mb-2 text-center font-heading text-3xl font-extrabold tracking-tight text-white md:text-4xl">
-                        Membership Plans
-                    </h2>
-                    <p className="mx-auto mb-10 max-w-xl text-center">
-                        No joining fees and no long contracts. Cancel anytime.
-                    </p>
-
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                        {plans.map((plan) => (
-                            <article
-                                key={plan.id}
-                                className={`flex flex-col rounded-xl bg-white/5 p-6 text-center ${plan.featured ? "border-2 border-accent-2" : "border border-white/10"}`}
-                            >
-                                {plan.featured && (
-                                    <p className="mb-3 self-center rounded-full bg-gradient-to-br from-blue-600 to-violet-600 px-3 py-1 text-xs font-bold text-white">
-                                        Most Popular
-                                    </p>
-                                )}
-
-                                <h3 className="font-heading text-xl font-bold text-white">{plan.name}</h3>
-                                <p className="mt-2 text-4xl font-bold text-accent-2">{plan.price}</p>
-                                <p className="mb-4 text-sm">{plan.period}</p>
-
-                                <ul className="mb-6 text-left">
-                                    {plan.perks.map((perk) => (
-                                        <li key={perk} className="border-b border-white/10 py-2">
-                                            <span className="font-bold text-accent">✓</span> {perk}
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                <a
-                                    href="#contact"
-                                    className={
-                                        plan.featured
-                                            ? "mt-auto rounded-lg bg-gradient-to-br from-blue-600 to-violet-600 px-6 py-3 font-semibold text-white transition hover:brightness-125"
-                                            : "mt-auto rounded-lg border-2 border-accent px-6 py-3 font-semibold text-white transition hover:bg-accent/10"
-                                    }
-                                >
-                                    Join {plan.name}
-                                </a>
-                            </article>
-                        ))}
-                    </div>
-
-                </div>
-
-            </section>
+            <MembershipPlans user={user} onSignInClick={onSignInClick} />
 
         </main>
     );

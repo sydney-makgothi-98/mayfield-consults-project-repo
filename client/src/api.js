@@ -87,3 +87,27 @@ export function getMe() {
 export function logout() {
     return request("/api/auth/logout", "POST");
 }
+
+export function getPlans() {
+    return request("/api/plans");
+}
+
+// Only the plan's id is sent. The server looks up the real price itself.
+export function startCheckout(planId) {
+    return request("/api/orders/checkout", "POST", { planId });
+}
+
+export function getOrder(orderId) {
+    return request("/api/orders/" + orderId);
+}
+
+
+/* ==========================================================================
+   SHOWING PRICES
+   ==========================================================================
+   Prices are saved in cents, so 45000 shows as "R450".
+   ========================================================================== */
+
+export function formatPrice(cents) {
+    return "R" + (cents / 100).toLocaleString("en-ZA");
+}

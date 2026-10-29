@@ -2,10 +2,10 @@
    SITE DATA
    ==========================================================================
    The smaller lists on the site live here. The components loop over
-   these arrays, so to add a trainer or plan, just add an object.
+   these arrays, so to add a trainer, just add an object.
 
-   The programs used to live here too. They now live in the database
-   (see server/seed.js) and come from the API instead.
+   The programs and membership plans used to live here too. They now
+   live in the database (see server/seed.js) and come from the API instead.
    ========================================================================== */
 
 
@@ -108,34 +108,3 @@ export const trainers = [
     },
 ];
 
-
-/* ==========================================================================
-   MEMBERSHIP PLANS
-   ========================================================================== */
-
-export const plans = [
-    {
-        id: 1,
-        name: "Day Pass",
-        price: "R80",
-        period: "per day",
-        featured: false,
-        perks: ["Full gym floor access", "Changing rooms & lockers", "One group class"],
-    },
-    {
-        id: 2,
-        name: "Monthly",
-        price: "R450",
-        period: "per month",
-        featured: true,
-        perks: ["Unlimited gym access", "All group classes", "Free fitness assessment", "Bring a friend once a month"],
-    },
-    {
-        id: 3,
-        name: "Annual",
-        price: "R4 500",
-        period: "per year",
-        featured: false,
-        perks: ["Everything in Monthly", "Two months free", "Two personal training sessions", "Four guest passes"],
-    },
-];
