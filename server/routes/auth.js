@@ -18,6 +18,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import db from "../db.js";
+import { getToken } from "../middleware/requireLogin.js";
 
 const router = express.Router();
 
@@ -40,17 +41,6 @@ async function createSession(userId) {
     );
 
     return token;
-}
-
-// Pulls the token out of the "Authorization: Bearer <token>" header
-function getToken(req) {
-    const header = req.headers.authorization || "";
-
-    if (header.startsWith("Bearer ")) {
-        return header.slice(7);
-    }
-
-    return null;
 }
 
 
